@@ -1,0 +1,39 @@
+name: Build Apple TV IPA
+
+on:
+  workflow_dispatch: # 사용자가 버튼을 누를 때만 실행
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app # 설치된 Xcode 버전 선택
+
+      - name: Build Project
+        run: |
+          xcodebuild -project Apple-TV-Player.xcodeproj \
+          -scheme Apple-TV-Player \
+          -configuration Release \
+          -sdk appletvos \
+          -derivedDataPath build \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
+          
+      - name: Create Payload and IPA
+        run: |
+          mkdir -p Payload
+          # 빌드된 .app 파일을 Payload 폴더로 복사
+          cp -r build/Build/Products/Release-appletvos/*.app Payload/
+          # Payload 폴더를 ipa로 압축
+          zip -r Apple-TV-Player.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Apple-TV-Player-IPA
+          path: Apple-TV-Player.ipa
