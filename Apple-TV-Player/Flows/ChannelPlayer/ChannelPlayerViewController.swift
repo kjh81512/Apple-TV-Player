@@ -140,7 +140,7 @@ final class ChannelPlayerViewController: UIViewController, StoryboardBased {
         let asset = AVAsset(url: url)
         let item = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: item)
-        let vc = AVPlayerViewController()
+        let vc = EnhancedPlayerViewController()
         vc.loadViewIfNeeded()
 
         addChild(vc)
